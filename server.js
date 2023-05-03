@@ -9,7 +9,7 @@ app.set("view engine", "ejs");
 // dis is the folder of the HYML from ejs
 app.set("views", "./views"); 
 // dis is the folder of java files to code in react
-app.set(express.static("public")); 
+app.use(express.static("public")); 
 
 // route for the root page
 app.get("/", async (req, res) => {
