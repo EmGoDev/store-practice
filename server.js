@@ -14,6 +14,7 @@ app.use(express.static("public"));
 // route for the root page
 app.get("/", async (req, res) => {
 	//find everything inside the collection animals and put it in an array and show it in the console
+	//.toArray() is for the output format to be understandable for us, humans
 	const allAnimals = await db.collection("animals").find().toArray();
 	console.log(allAnimals);
 	// render the HTML inside home.ejs, and take allAnimals with you :D.
@@ -24,6 +25,15 @@ app.get("/", async (req, res) => {
 app.get("/admin", (req, res) => {
 	res.render("admin");
 });
+
+// route for the RAW DATA
+app.get("/api/animals", async (req, res) => {
+	const allAnimals = await db.collection("animals").find().toArray();
+	res.json(allAnimals)
+});
+
+
+
 // foce DB connection before someone visits our server
 async function start() {
 	const client = new MongoClient(
