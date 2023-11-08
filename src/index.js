@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import Axios from "axios";
+import CreateNewForm from "./components/createNewForm";
+import AnimalCard from "./components/AnimalCard";
 
 function App() {
 	// useState that retrieves 2 things:
@@ -18,26 +20,24 @@ function App() {
 			//and use setAnimals to update animals with whatever the server gets back to us
 			setAnimals(response.data);
 		}
-		go()
+		go();
 	}, []);
 	//so the useEffect executes once and gets the data to update animals
 
 	return (
-		<div>
-			<h1>Hello</h1>
-			<p>Hey, this is from React.</p>
-			{animals.map(function (animal) {
-				return <AnimalCard name={animal.name} species={animal.species} />;
-			})}
-		</div>
-	);
-}
+		<div className="container">
+			<p>
+				<a href="/">&laquo; Back to public homepage</a>
+			</p>
 
-function AnimalCard(props) {
-	return (
-		<p>
-			Hi, my name is {props.name} and im a {props.species}{" "}
-		</p>
+			<CreateNewForm setAnimals={setAnimals} />
+
+			<div className="animal-grid">
+				{animals.map(function (animal) {
+					return <AnimalCard key={animal._id} name={animal.name} species={animal.species} photo={animal.photo} id={animal.id} setAnimal={setAnimals} />;
+				})}
+			</div>
+		</div>
 	);
 }
 
