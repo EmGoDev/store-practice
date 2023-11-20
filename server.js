@@ -1,6 +1,14 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const express = require("express");
+const multer = require("multer")
+const upload = multer()
+const sanitizeHTML = require("sanitize-html")
+const fse = require("fs-extra")
+const sharp = require("sharp")
+
 let db; // only to initialize it and use it on start() function
+
+const path = require("path")
 
 // this is an instance of the imported express
 const app = express();
@@ -10,6 +18,9 @@ app.set("view engine", "ejs");
 app.set("views", "./views"); 
 // dis is the folder of java files to code in react
 app.use(express.static("public")); 
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 function passwordProtecc (req, res, next) {
 	res.set("WWW-Authenticate", "Basic realm='Our MERN App")
@@ -46,6 +57,31 @@ app.get("/api/animals", async (req, res) => {
 	res.json(allAnimals)
 });
 
+app.post("/create-animal", upload.single("photo"), Cleanup, async (req, res) => {
+	if (req.file) {
+	  const photofilename = `${Date.now()}.jpg`
+	  await sharp(req.file.buffer).resize(844, 456).jpeg({ quality: 60 }).toFile(path.join("public", "uploaded-photos", photofilename))
+	  req.cleanData.photo = photofilename
+	}
+  
+	console.log(req.body)
+	const info = await db.collection("animals").insertOne(req.cleanData)
+	const newAnimal = await db.collection("animals").findOne({ _id: new ObjectId(info.insertedId) })
+	res.send(newAnimal)
+  })
+
+function Cleanup(req, res, next) {
+	if (typeof req.body.name != "string") req.body.name = ""
+	if (typeof req.body.species != "string") req.body.species = ""
+	if (typeof req.body._id != "string") req.body._id = ""
+  
+	req.cleanData = {
+	  name: sanitizeHTML(req.body.name.trim(), { allowedTags: [], allowedAttributes: {} }),
+	  species: sanitizeHTML(req.body.species.trim(), { allowedTags: [], allowedAttributes: {} })
+	}
+  
+	next()
+  }
 
 
 // foce DB connection before someone visits our server
