@@ -27,7 +27,7 @@ function CreateNewForm(props) {
         <input ref={CreatePhotoField} onChange={e => setFile(e.target.files[0])} type="file" className="form-control" />
       </div>
       <div className="mb-2">
-        <input onChange={e => setName(e.target.value)} value={name} type="text" className="form-control" placeholder="Animal name" />
+        <input onChange={e => setName(e.target.value)} value={name} type="text" className="form-control" placeholder="Item name" />
       </div>
       <div className="mb-2">
         <input onChange={e => setSpecies(e.target.value)} value={species} type="text" className="form-control" placeholder="Species" />
